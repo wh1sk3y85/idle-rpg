@@ -1,6 +1,9 @@
 const STORAGE_KEY = "emberwake-idle-save-v2";
 const LEGACY_STORAGE_KEY = "emberwake-idle-save-v1";
-const TICK_MS = 1000;
+const TICK_MS = 100;
+const RENDER_MS = 250;
+const SAVE_MS = 5000;
+const GATHER_INTERVAL_S = 1;
 const OFFLINE_CAP_MS = 1000 * 60 * 60 * 6;
 const zoneArt = {
   fen: "./assets/backgrounds/whispering-fen.svg",
@@ -255,12 +258,12 @@ const healingItems = [
 
 const weaponCatalog = [
   { id: "hands", name: "Bare Hands", weaponType: "hands", baseDamage: 2, baseDelay: 1.05, crafted: true, growthLabel: "Unarmed" },
-  { id: "sword", name: "Iron Blade", weaponType: "sword", baseDamage: 5, baseDelay: 1.15, growthLabel: "Strength Blade" },
-  { id: "shield", name: "Tower Shield", weaponType: "shield", baseDamage: 2, baseDelay: 1.28, growthLabel: "Defense Bulwark" },
-  { id: "bow", name: "Marsh Bow", weaponType: "bow", baseDamage: 4, baseDelay: 1.02, growthLabel: "Dexterity Bow" },
-  { id: "staff", name: "Fen Staff", weaponType: "staff", baseDamage: 5, baseDelay: 1.22, growthLabel: "Magic Focus" },
-  { id: "knife", name: "Camp Knife", weaponType: "knife", baseDamage: 3, baseDelay: 0.95, growthLabel: "Quick Blade" },
-  { id: "spear", name: "Cinder Pike", weaponType: "spear", baseDamage: 4, baseDelay: 1.08, growthLabel: "Critical Pike" },
+  { id: "sword", name: "Iron Blade", weaponType: "sword", baseDamage: 4, baseDelay: 1.05, growthLabel: "Strength Blade" },
+  { id: "shield", name: "Tower Shield", weaponType: "shield", baseDamage: 3, baseDelay: 1.25, growthLabel: "Defense Bulwark" },
+  { id: "bow", name: "Marsh Bow", weaponType: "bow", baseDamage: 5, baseDelay: 1.2, growthLabel: "Dexterity Bow" },
+  { id: "staff", name: "Fen Staff", weaponType: "staff", baseDamage: 6, baseDelay: 1.35, growthLabel: "Magic Focus" },
+  { id: "knife", name: "Camp Knife", weaponType: "knife", baseDamage: 3, baseDelay: 0.85, growthLabel: "Quick Blade" },
+  { id: "spear", name: "Cinder Pike", weaponType: "spear", baseDamage: 5, baseDelay: 1.25, growthLabel: "Critical Pike" },
 ];
 
 const toolCatalog = [
@@ -591,6 +594,7 @@ function baseState() {
     gathering: {
       nodeHealth: skills[0].nodeHealth,
       respawnDelay: 0,
+      actionTimer: 0,
     },
     activeSkill: "prospecting",
     crafted: {
@@ -700,6 +704,8 @@ function loadState() {
         merged.hero.dexterity = fresh.hero.dexterity;
       }
     }
+    merged.hero.critRate = 0;
+    merged.hero.attackSpeed = 0;
 
     if (parsed.resources?.healingPotion) {
       merged.resources.bandage += parsed.resources.healingPotion;
@@ -754,6 +760,9 @@ function loadState() {
     const activeSkill = skills.find((skill) => skill.id === merged.activeSkill) || skills[0];
     if (!merged.gathering.nodeHealth || merged.gathering.nodeHealth > activeSkill.nodeHealth) {
       merged.gathering.nodeHealth = activeSkill.nodeHealth;
+    }
+    if (typeof merged.gathering.actionTimer !== "number") {
+      merged.gathering.actionTimer = 0;
     }
 
     const zone = getZoneById(merged.combat.selectedZoneId) || zones[0];
@@ -849,10 +858,12 @@ function getWeaponProfile(weaponId = state.equipment.weapon) {
   const profile = {
     baseDamage: weapon.baseDamage || 1,
     proficiency: level,
+    strength: 0,
     defense: 0,
     dexterity: 0,
+    magic: 0,
     critRate: 0,
-    attackSpeed: 0,
+    attackRateBonus: 0,
     armorBreak: 0,
     baseDelay: weapon.baseDelay || 1,
     damageLabel: "STR",
@@ -860,25 +871,27 @@ function getWeaponProfile(weaponId = state.equipment.weapon) {
 
   switch (weapon.weaponType) {
     case "knife":
+      profile.attackRateBonus = level;
       profile.damageLabel = "STR";
       break;
     case "sword":
+      profile.strength = level;
       profile.damageLabel = "STR";
       break;
     case "spear":
-      profile.critRate = Math.floor(level * 0.35);
-      profile.dexterity = Math.floor(level * 0.15);
+      profile.critRate = 5 + level;
       profile.damageLabel = "DEX";
       break;
     case "bow":
-      profile.dexterity = Math.floor(level * 0.25);
+      profile.dexterity = level;
       profile.damageLabel = "DEX";
       break;
     case "shield":
-      profile.defense = 2 + Math.floor(level * 0.25);
+      profile.defense = level;
       profile.damageLabel = "DEF";
       break;
     case "staff":
+      profile.magic = level;
       profile.damageLabel = "MAG";
       break;
     default:
@@ -910,18 +923,19 @@ function getToolProfile(toolId = state.equipment.tool, skillId = state.activeSki
 function getCombatStats() {
   const weaponProfile = getWeaponProfile();
   const toolProfile = getToolProfile();
-  const critRate = Math.min(60, state.hero.critRate + weaponProfile.critRate);
+  const baseCritRate = 1 + state.hero.combatLevel * 0.1;
+  const critRate = Math.min(75, baseCritRate + weaponProfile.critRate);
   const dexterity = Math.max(0, state.hero.dexterity + weaponProfile.dexterity);
-  const attackSpeedRating = Math.max(0, state.hero.attackSpeed + weaponProfile.attackSpeed);
-  const attackDelay = Math.max(0.35, weaponProfile.baseDelay / (1 + attackSpeedRating / 1000));
+  const attackRateMultiplier = 1 + weaponProfile.attackRateBonus / 100;
+  const attackDelay = Math.max(0.35, weaponProfile.baseDelay / attackRateMultiplier);
   const attacksPerSecond = 1 / attackDelay;
   return {
-    strength: state.hero.strength,
+    strength: state.hero.strength + weaponProfile.strength,
     defense: state.hero.defense + weaponProfile.defense,
-    magic: state.hero.magic,
+    magic: state.hero.magic + weaponProfile.magic,
     dexterity,
     critRate,
-    attackSpeed: attackSpeedRating,
+    attackRateMultiplier,
     attackDelay,
     attacksPerSecond,
     armorBreak: weaponProfile.armorBreak,
@@ -935,34 +949,36 @@ function getWeaponDamage(stats) {
   const weapon = getCurrentWeapon();
   const toolPenalty = stats.toolAttackPenalty;
   const profile = stats.weaponProfile;
-  const proficiencyMultiplier = 1 + profile.proficiency / 100;
   let baseDamage = profile.baseDamage;
 
   switch (weapon.weaponType) {
     case "knife":
-      baseDamage += stats.strength * 0.3;
+      baseDamage += stats.strength * 0.35;
       break;
     case "sword":
-      baseDamage += stats.strength * 0.5;
+      baseDamage += stats.strength * 0.58;
       break;
     case "spear":
-      baseDamage += stats.dexterity * 0.42;
+      baseDamage += stats.dexterity * 0.44;
       break;
     case "bow":
-      baseDamage += stats.dexterity * 0.55;
+      baseDamage += stats.dexterity * 0.58;
       break;
     case "shield":
-      baseDamage += stats.defense * 0.3 + stats.strength * 0.15;
+      baseDamage += stats.defense * 0.24 + stats.strength * 0.14;
       break;
     case "staff":
-      baseDamage += stats.magic * 0.65;
+      baseDamage += stats.magic * 0.6;
       break;
     default:
-      baseDamage += stats.strength * 0.18;
+      baseDamage += stats.strength * 0.2;
       break;
   }
 
-  return Math.max(1, baseDamage * proficiencyMultiplier - (weapon.weaponType === "staff" ? toolPenalty * 0.5 : toolPenalty));
+  const adjustedDamage = ["knife", "spear"].includes(weapon.weaponType)
+    ? baseDamage * (1 + profile.proficiency / 100)
+    : baseDamage;
+  return Math.max(1, adjustedDamage - (weapon.weaponType === "staff" ? toolPenalty * 0.5 : toolPenalty));
 }
 
 function getUpgradeCosts(recipe) {
@@ -1119,14 +1135,11 @@ function handleGathering(seconds) {
     return;
   }
 
-  const strikes = Math.floor(seconds);
-  if (strikes <= 0) {
-    return;
-  }
-
+  state.gathering.actionTimer = (state.gathering.actionTimer || 0) + seconds;
   const gatherDamage = getToolProfile().gatherDamage;
   let completed = 0;
-  for (let index = 0; index < strikes; index += 1) {
+  while (state.gathering.actionTimer >= GATHER_INTERVAL_S) {
+    state.gathering.actionTimer -= GATHER_INTERVAL_S;
     if (state.gathering.respawnDelay > 0) {
       state.gathering.respawnDelay -= 1;
       if (state.gathering.respawnDelay <= 0) {
@@ -1327,19 +1340,14 @@ function renderHero() {
   const damagePerHit = getWeaponDamage(stats);
   const dps = ((damagePerHit + damagePerHit * (stats.critRate / 100) * 0.5) / stats.attackDelay).toFixed(1);
   const heroStats = [
-    { label: "HP", value: `${Math.round(state.hero.health)}/${state.hero.maxHealth}` },
     { label: "STR", value: stats.strength },
     { label: "DEF", value: stats.defense },
     { label: "MAG", value: stats.magic },
     { label: "DEX", value: stats.dexterity },
-    { label: "CRIT", value: `${stats.critRate}%` },
-    { label: "SPD", value: state.hero.attackSpeed },
-    { label: "Level", value: state.hero.combatLevel },
-    { label: "Kills", value: state.stats.kills },
-    { label: "Healed", value: state.stats.totalHealed },
-    { label: "Crafted", value: state.stats.totalCrafted },
-    { label: "Gathered", value: state.stats.totalGathered },
-    { label: "Auto Med", value: state.stats.totalAutoCraftedHealing },
+    { label: "CRIT", value: `${stats.critRate.toFixed(1)}%` },
+    { label: "Delay", value: `${stats.attackDelay.toFixed(2)}s` },
+    { label: "DPS", value: dps },
+    { label: "Hit", value: damagePerHit.toFixed(1) },
   ];
 
   dom.heroStats.innerHTML = heroStats
@@ -1357,7 +1365,7 @@ function renderHero() {
   const xpPercent = Math.min(100, (state.hero.combatXp / xpTarget) * 100);
   const weaponLevelLabel = weapon.id === "hands" ? "Base" : `Lv ${Math.max(1, getWeaponLevel(weapon.id))}`;
   const toolLabel = tool.id === "hands" ? "No Tool" : `${tool.name} Lv ${Math.max(1, getToolLevel(tool.id))}`;
-  dom.heroSummaryLine.innerHTML = `${weapon.name} ${weaponLevelLabel}<br />${toolLabel} | DPS: ${dps}`;
+  dom.heroSummaryLine.innerHTML = `${weapon.name} ${weaponLevelLabel} | DPS ${dps}<br />${toolLabel}`;
   dom.heroHpLabel.textContent = `${Math.round(state.hero.health)} / ${state.hero.maxHealth}`;
   dom.heroLevelLabel.textContent = `${state.hero.combatLevel}`;
   dom.combatXpFill.style.width = `${xpPercent}%`;
@@ -1418,15 +1426,29 @@ function renderEquipment() {
       </div>
       <span class="choice-chip">${
         equippedWeapon.id === "hands" ? "Base" : `Lv ${Math.max(1, getWeaponLevel(equippedWeapon.id))}`
-      } | Prof ${equippedProfile.proficiency}%</span>
+      } | ${equippedProfile.baseDamage} DMG | ${equippedProfile.baseDelay.toFixed(2)}s</span>
     </div>
     <div class="choice-button-row">${weaponOptions}</div>
     <div class="equipment-slot-card">
       <div>
-        <div class="choice-title">Weapon Profile</div>
-        <div class="choice-copy">${equippedWeapon.id === "hands" ? "Bare-handed baseline damage." : `${equippedWeapon.growthLabel} with ${equippedProfile.proficiency}% proficiency.`}</div>
+        <div class="choice-title">Weapon Bonus</div>
+        <div class="choice-copy">${
+          equippedWeapon.id === "hands"
+            ? "No weapon bonus."
+            : [
+                equippedProfile.strength ? `+${equippedProfile.strength} STR` : null,
+                equippedProfile.defense ? `+${equippedProfile.defense} DEF` : null,
+                equippedProfile.dexterity ? `+${equippedProfile.dexterity} DEX` : null,
+                equippedProfile.magic ? `+${equippedProfile.magic} MAG` : null,
+                equippedProfile.critRate ? `+${equippedProfile.critRate.toFixed(1)}% Crit` : null,
+                equippedProfile.attackRateBonus ? `-${equippedProfile.attackRateBonus}% Knife Delay` : null,
+              ]
+                .filter(Boolean)
+                .join(" | ")
+            || "No bonus."
+        }</div>
       </div>
-      <span class="choice-chip">DMG ${equippedProfile.baseDamage} | DEF ${equippedProfile.defense} | DEX ${equippedProfile.dexterity} | CRIT ${equippedProfile.critRate}% | Delay ${equippedProfile.baseDelay.toFixed(2)}s | ${equippedProfile.damageLabel} scale</span>
+      <span class="choice-chip">${equippedWeapon.growthLabel}</span>
     </div>
     <div class="equipment-slot-card">
       <div>
@@ -1434,25 +1456,10 @@ function renderEquipment() {
         <div class="choice-copy">${equippedTool.name}</div>
       </div>
       <span class="choice-chip">${
-        equippedTool.id === "hands" ? "No penalty" : `Lv ${Math.max(1, getToolLevel(equippedTool.id))} | -${equippedToolProfile.attackPenalty} DMG`
+        equippedTool.id === "hands" ? "No penalty" : `Lv ${Math.max(1, getToolLevel(equippedTool.id))} | -${equippedToolProfile.attackPenalty} DMG | +${equippedToolProfile.gatherDamage} Gather`
       }</span>
     </div>
     <div class="choice-button-row">${toolOptions}</div>
-    <div class="equipment-slot-card">
-      <div>
-        <div class="choice-title">Tool Trade-Off</div>
-        <div class="choice-copy">${
-          equippedTool.id === "hands"
-            ? "Equip a tool when you want faster gathering."
-            : `${equippedTool.growthLabel} Matching focus gathers for ${equippedToolProfile.gatherDamage} damage.`
-        }</div>
-      </div>
-      <span class="choice-chip">${
-        equippedTool.id === "hands"
-          ? "Gather Hit 1"
-          : `${equippedTool.toolType} | Gather Hit ${equippedToolProfile.gatherDamage}`
-      }</span>
-    </div>
     ${gearSummaries
       .map(
         (gear) => `
@@ -1471,10 +1478,10 @@ function renderEquipment() {
         (accessory) => `
           <div class="equipment-slot-card">
             <div>
-              <div class="choice-title">Accessory</div>
-              <div class="choice-copy">${accessory.name}</div>
+              <div class="choice-title">${accessory.name}</div>
+              <div class="choice-copy">${accessory.level > 0 ? accessory.summary : "Uncrafted"}</div>
             </div>
-            <span class="choice-chip">Lv ${accessory.level} | ${accessory.level > 0 ? accessory.summary : "Uncrafted"}</span>
+            <span class="choice-chip">Lv ${accessory.level}</span>
           </div>
         `
       )
@@ -1497,10 +1504,8 @@ function renderGatherSummary() {
   const toolProfile = getToolProfile();
   dom.gatherSummaryLine.textContent = `${activeSkill.name} | ${resourceMeta[activeSkill.resource].name}`;
   dom.gatherCycleLabel.textContent = state.gathering.respawnDelay > 0
-    ? `Node Respawning | Hit ${toolProfile.gatherDamage} | ${tool.id === "hands" ? "No tool equipped" : `${tool.name} -${toolProfile.attackPenalty} DMG`}`
-    : `Node ${state.gathering.nodeHealth}/${activeSkill.nodeHealth} HP | Hit ${toolProfile.gatherDamage} | ${
-        tool.id === "hands" ? "No tool equipped" : `${tool.name} -${toolProfile.attackPenalty} DMG`
-      }`;
+    ? `Respawning | Hit ${toolProfile.gatherDamage}${tool.id === "hands" ? "" : ` | ${tool.name}`}`
+    : `${state.gathering.nodeHealth}/${activeSkill.nodeHealth} HP | Hit ${toolProfile.gatherDamage}${tool.id === "hands" ? "" : ` | ${tool.name}`}`;
   dom.gatherProgressFill.style.width = `${progress}%`;
 }
 
@@ -1517,12 +1522,12 @@ function renderCraftSummary() {
   const progress = Math.min(100, (state.crafting.progress / recipe.craftSeconds) * 100);
   const stockLimit = getHealingItem(recipe.id)?.autoCraftLimit || 10;
   const stock = state.resources[product] || 0;
-  dom.craftSummaryLine.textContent = `${recipe.name} | ${resourceMeta[product].name}`;
+  dom.craftSummaryLine.textContent = recipe.name;
   dom.craftCycleLabel.textContent = stock >= stockLimit
-    ? `Reserve full ${stock}/${stockLimit}`
+    ? `Reserve Full | ${stock}/${stockLimit}`
     : canAfford(recipe.costs)
-      ? `Cycle ${recipe.craftSeconds}s | Stock ${stock}/${stockLimit}`
-      : `Waiting for materials | Stock ${stock}/${stockLimit}`;
+      ? `${recipe.craftSeconds}s Cycle | ${stock}/${stockLimit}`
+      : `Waiting | ${stock}/${stockLimit}`;
   dom.craftProgressFill.style.width = `${progress}%`;
 }
 
@@ -1628,12 +1633,13 @@ function renderCombat() {
     <img class="battle-scene-image" src="${zoneArt[zone.id] || zoneArt.fen}" alt="${zone.name} battlefield backdrop" />
     <img class="enemy-sprite" src="${enemyArt[enemy.id] || enemyArt.slime}" alt="${enemy.name}" />
     <div class="battle-caption">
-      <div class="enemy-name">${enemy.name}</div>
-      <p class="enemy-subtitle">Lvl ${enemy.level} | ${zone.name}</p>
-      <div class="enemy-health-bar">
-        <div class="enemy-health-fill" style="width: ${healthPercent}%"></div>
+      <div class="battle-caption-row">
+        <div class="enemy-name">${enemy.name}</div>
+        <div class="enemy-health-bar compact-health-bar">
+          <div class="enemy-health-fill" style="width: ${healthPercent}%"></div>
+        </div>
       </div>
-      <p class="enemy-subtitle">${Math.max(0, Math.round(enemy.currentHealth))} / ${enemy.maxHealth} HP | EVA ${enemy.evasion} | Hit ${hitChance}%</p>
+      <p class="enemy-subtitle">Lvl ${enemy.level} | ${Math.max(0, Math.round(enemy.currentHealth))}/${enemy.maxHealth} HP | EVA ${enemy.evasion} | Hit ${hitChance}%</p>
       ${requirementText ? `<p class="enemy-subtitle">${requirementText}</p>` : ""}
     </div>
   `;
@@ -2086,6 +2092,7 @@ function attachEvents() {
     const skill = skills.find((entry) => entry.id === skillId);
     state.gathering.nodeHealth = skill.nodeHealth;
     state.gathering.respawnDelay = 0;
+    state.gathering.actionTimer = 0;
     state.skillProgress[skillId] = 0;
     addLog(`${skills.find((skill) => skill.id === skillId).name} is now your focus.`);
     render();
@@ -2135,8 +2142,15 @@ function gameLoop() {
   if (elapsed >= TICK_MS) {
     tick(elapsed);
     state.lastTickAt = now;
-    render();
-    saveState();
+    const menuOpen = !dom.overlayShell.classList.contains("hidden") || !dom.battleLogOverlay.classList.contains("hidden");
+    const activeRenderMs = menuOpen ? 450 : RENDER_MS;
+    if (!state.lastRenderAt || now - state.lastRenderAt >= activeRenderMs) {
+      render();
+      state.lastRenderAt = now;
+    }
+    if (now - state.lastSavedAt >= SAVE_MS) {
+      saveState();
+    }
   }
 
   requestAnimationFrame(gameLoop);
@@ -2144,6 +2158,7 @@ function gameLoop() {
 
 processOfflineProgress();
 state.lastTickAt = Date.now();
+state.lastRenderAt = Date.now();
 attachEvents();
 render();
 saveState();

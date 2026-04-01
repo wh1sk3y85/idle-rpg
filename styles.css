@@ -132,6 +132,8 @@ h1 {
   font-size: 0.96rem;
   font-weight: 700;
   margin-top: 2px;
+  line-height: 1.25;
+  min-height: 2.5em;
 }
 
 .hero-summary,
@@ -168,6 +170,11 @@ h1 {
 
 .hero-summary-actions {
   gap: 8px;
+}
+
+.hero-summary-row > div,
+.panel-title-row > div {
+  min-width: 0;
 }
 
 .hero-summary,
@@ -261,6 +268,8 @@ h1 {
   color: var(--muted);
   margin-top: 6px;
   font-size: 0.86rem;
+  line-height: 1.2;
+  min-height: 1.2em;
 }
 
 .pill,
@@ -275,6 +284,10 @@ h1 {
   color: var(--accent-strong);
   font-size: 0.78rem;
   font-weight: 700;
+}
+
+#combat-status {
+  min-width: 144px;
 }
 
 .choice-chip-row,
@@ -438,10 +451,19 @@ h1 {
   z-index: 2;
   transform: translateX(-50%);
   width: calc(100% - 40px);
-  padding: 10px 12px;
+  padding: 8px 10px;
   border-radius: 18px;
   background: rgba(9, 14, 27, 0.62);
   border: 1px solid rgba(146, 167, 222, 0.1);
+  min-height: 64px;
+  display: grid;
+  gap: 4px;
+}
+
+.battle-caption-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .battle-log {
@@ -628,9 +650,14 @@ h1 {
   line-height: 1.4;
 }
 
+.enemy-subtitle {
+  min-height: 1.4em;
+}
+
 .enemy-name {
-  font-size: 1.2rem;
+  font-size: 1.02rem;
   font-weight: 700;
+  flex: 0 0 auto;
 }
 
 .enemy-health-bar {
@@ -639,6 +666,13 @@ h1 {
   margin: 12px 0 8px;
   border-radius: var(--radius-sm);
   background: rgba(255, 127, 127, 0.12);
+}
+
+.compact-health-bar {
+  flex: 1;
+  height: 8px;
+  margin: 0;
+  min-width: 0;
 }
 
 .enemy-health-fill {
