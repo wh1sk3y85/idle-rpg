@@ -1,0 +1,684 @@
+:root {
+  color-scheme: dark;
+  --bg-top: #060816;
+  --bg-bottom: #0d1323;
+  --shell: rgba(9, 14, 28, 0.92);
+  --panel: rgba(16, 22, 39, 0.88);
+  --panel-strong: rgba(22, 29, 48, 0.92);
+  --panel-border: rgba(120, 140, 194, 0.16);
+  --text: #edf2ff;
+  --muted: #96a3c8;
+  --accent: #7c5cff;
+  --accent-strong: #b299ff;
+  --accent-soft: rgba(124, 92, 255, 0.16);
+  --success: #43c59e;
+  --warning: #f1b95a;
+  --danger: #ff7f7f;
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.36);
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --radius-sm: 999px;
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(124, 92, 255, 0.18), transparent 30%),
+    radial-gradient(circle at bottom, rgba(67, 197, 158, 0.1), transparent 35%),
+    linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+  color: var(--text);
+}
+
+button {
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+.app-shell {
+  width: min(100%, 520px);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 6px;
+}
+
+.adventurer-shell {
+  position: relative;
+  min-height: calc(100vh - 16px);
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  border-radius: 34px;
+  background:
+    linear-gradient(180deg, rgba(25, 33, 56, 0.98), rgba(10, 14, 26, 0.98)),
+    var(--shell);
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.adventurer-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(124, 92, 255, 0.14), transparent 24%),
+    radial-gradient(circle at 80% 20%, rgba(67, 197, 158, 0.1), transparent 18%);
+  pointer-events: none;
+}
+
+.scene-header,
+.hero-summary-row,
+.hero-summary-actions,
+.hero-vitals,
+.panel-title-row,
+.resource-item,
+.stat-card,
+.skill-header,
+.recipe-meta,
+.milestone-card,
+.zone-name-row,
+.enemy-choice-row,
+.healing-row,
+.healing-meta,
+.menu-header,
+.header-actions {
+  display: flex;
+  align-items: center;
+}
+
+.scene-header,
+.hero-summary-row,
+.panel-title-row,
+.recipe-meta,
+.milestone-card,
+.zone-name-row,
+.enemy-choice-row,
+.healing-row,
+.healing-meta,
+.menu-header {
+  justify-content: space-between;
+}
+
+.eyebrow,
+.summary-label {
+  color: var(--accent-strong);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 1.65rem;
+  line-height: 1;
+  margin-top: 0;
+}
+
+.summary-value {
+  font-size: 0.96rem;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.hero-summary,
+.gather-summary,
+.panel,
+.menu-sheet,
+.enemy-card,
+.skill-card,
+.recipe-card,
+.resource-item,
+.milestone-card,
+.zone-card,
+.enemy-choice,
+.healing-card {
+  backdrop-filter: blur(18px);
+}
+
+.hero-summary,
+.gather-summary,
+.panel {
+  position: relative;
+  z-index: 1;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.header-actions {
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.hero-summary-actions {
+  gap: 8px;
+}
+
+.hero-summary,
+.gather-summary,
+.panel,
+.enemy-card,
+.skill-card,
+.recipe-card,
+.zone-card,
+.enemy-choice,
+.healing-card {
+  padding: 10px;
+}
+
+.hero-vitals {
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.vital-block,
+.stat-card {
+  flex: 1;
+  min-width: 0;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(148, 165, 220, 0.1);
+}
+
+.stats-grid,
+.equipment-slots,
+.work-grid,
+.skill-cards,
+.recipe-list,
+.milestone-list,
+.zone-list,
+.healing-loadout {
+  display: grid;
+  gap: 12px;
+}
+
+.equipment-slot-card,
+.recipe-group {
+  display: grid;
+  gap: 10px;
+}
+
+.work-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.stats-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 10px;
+}
+
+.stat-card {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.stat-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.xp-bar {
+  position: relative;
+  overflow: hidden;
+  height: 12px;
+  margin-top: 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(124, 92, 255, 0.1);
+}
+
+.xp-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), #5ce1e6);
+  transition: width 220ms ease;
+}
+
+.muted {
+  color: var(--muted);
+  margin-top: 6px;
+  font-size: 0.86rem;
+}
+
+.pill,
+.choice-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(124, 92, 255, 0.16);
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.choice-chip-row,
+.choice-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.battle-stage {
+  position: relative;
+  z-index: 1;
+  min-height: 330px;
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(180deg, rgba(18, 26, 46, 0.8), rgba(8, 12, 22, 0.94)),
+    var(--panel);
+  border: 1px solid var(--panel-border);
+}
+
+.battle-backdrop {
+  position: relative;
+  min-height: 314px;
+  border-radius: 24px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at center, rgba(124, 92, 255, 0.22), transparent 30%),
+    linear-gradient(180deg, rgba(15, 21, 39, 0.5), rgba(8, 12, 23, 0.88));
+  border: 1px solid rgba(146, 167, 222, 0.12);
+}
+
+.backdrop-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 70%, rgba(67, 197, 158, 0.22), transparent 24%),
+    radial-gradient(circle at 50% 35%, rgba(124, 92, 255, 0.18), transparent 18%);
+}
+
+.battle-art {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+.battle-scene-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+  opacity: 0.94;
+  filter: saturate(0.95) contrast(1.05);
+}
+
+.enemy-sprite {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: min(48vw, 184px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -42%);
+  image-rendering: pixelated;
+  filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.42));
+}
+
+.corner-button {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  z-index: 2;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: rgba(8, 12, 23, 0.72);
+  color: var(--text);
+  border: 1px solid rgba(146, 167, 222, 0.16);
+}
+
+.stage-action-button {
+  position: absolute;
+  left: 50%;
+  top: 14px;
+  z-index: 2;
+  transform: translateX(-50%);
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  background: rgba(8, 12, 23, 0.78);
+  color: var(--text);
+  border: 1px solid rgba(146, 167, 222, 0.16);
+}
+
+.stage-toggle-button {
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  z-index: 2;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: rgba(8, 12, 23, 0.78);
+  color: var(--text);
+  border: 1px solid rgba(146, 167, 222, 0.16);
+}
+
+.stage-toggle-button.active {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  border-color: rgba(176, 157, 255, 0.24);
+}
+
+.battle-log-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(5, 9, 18, 0.34);
+}
+
+.log-overlay-card {
+  width: 100%;
+  max-width: 100%;
+  padding: 14px;
+  border-radius: 22px;
+  background: rgba(15, 22, 39, 0.74);
+  border: 1px solid rgba(146, 167, 222, 0.14);
+  backdrop-filter: blur(18px);
+}
+
+.battle-portrait {
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.16), transparent 18%),
+    linear-gradient(180deg, rgba(124, 92, 255, 0.36), rgba(67, 197, 158, 0.16));
+  border: 1px solid rgba(184, 197, 255, 0.12);
+  box-shadow: 0 0 40px rgba(124, 92, 255, 0.18);
+}
+
+.battle-glyph {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 4rem;
+}
+
+.battle-caption {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  z-index: 2;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  padding: 10px 12px;
+  border-radius: 18px;
+  background: rgba(9, 14, 27, 0.62);
+  border: 1px solid rgba(146, 167, 222, 0.1);
+}
+
+.battle-log {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.log-entry {
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.log-entry strong {
+  color: var(--text);
+}
+
+.menu-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  align-items: end;
+  background: rgba(4, 8, 18, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+.menu-overlay.hidden {
+  display: none;
+}
+
+.menu-sheet {
+  border-top-left-radius: 28px;
+  border-top-right-radius: 28px;
+  background: var(--panel-strong);
+  border: 1px solid var(--panel-border);
+  border-bottom: 0;
+  padding: 16px 14px 18px;
+  max-height: 78vh;
+  overflow: hidden;
+  box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.46);
+}
+
+.menu-title {
+  margin-top: 4px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.menu-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin: 14px 0;
+  padding-bottom: 2px;
+}
+
+.menu-tab-button,
+.compact-button,
+.primary-button,
+.secondary-button,
+.skill-button,
+.recipe-button,
+.icon-button {
+  padding: 11px 13px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.menu-tab-button,
+.compact-button,
+.secondary-button,
+.icon-button {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  border: 1px solid rgba(146, 167, 222, 0.12);
+}
+
+.icon-button {
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  padding: 0;
+  font-size: 1.1rem;
+}
+
+.menu-tab-button.active,
+.compact-button.active {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  border-color: rgba(176, 157, 255, 0.24);
+}
+
+.primary-button,
+.skill-button,
+.recipe-button {
+  background: linear-gradient(180deg, var(--accent), #5f8bff);
+  color: #f6f7ff;
+}
+
+.skill-button.active {
+  background: linear-gradient(180deg, var(--success), #2e9d7d);
+}
+
+.menu-panel-wrap {
+  max-height: calc(78vh - 124px);
+  overflow: auto;
+}
+
+.menu-panel {
+  display: none;
+}
+
+.menu-panel.active {
+  display: block;
+}
+
+.gather-summary {
+  position: relative;
+  z-index: 1;
+  padding: 10px 10px 8px;
+}
+
+.compact-bar {
+  margin-top: 8px;
+}
+
+.zone-enemy-list {
+  display: grid;
+  gap: 10px;
+}
+
+.recipe-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.enemy-card,
+.skill-card,
+.recipe-card,
+.resource-item,
+.milestone-card,
+.zone-card,
+.enemy-choice,
+.healing-card {
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(146, 167, 222, 0.1);
+}
+
+.zone-card.active,
+.enemy-choice.active,
+.healing-card.active {
+  border-color: rgba(176, 157, 255, 0.24);
+  background: rgba(124, 92, 255, 0.09);
+}
+
+.zone-card.locked,
+.enemy-choice.locked,
+.healing-card.locked {
+  opacity: 0.6;
+}
+
+.choice-title,
+.resource-name {
+  font-weight: 700;
+}
+
+.choice-copy,
+.skill-rate,
+.resource-detail,
+.recipe-costs,
+.milestone-copy,
+.healing-detail,
+.enemy-subtitle {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.enemy-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.enemy-health-bar {
+  height: 12px;
+  overflow: hidden;
+  margin: 12px 0 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 127, 127, 0.12);
+}
+
+.enemy-health-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff7f7f, #f1b95a);
+}
+
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.resource-item {
+  justify-content: space-between;
+  padding: 12px 14px;
+}
+
+.milestone-card.complete {
+  border-color: rgba(67, 197, 158, 0.28);
+  background: rgba(67, 197, 158, 0.08);
+}
+
+.milestone-status {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--warning);
+}
+
+.milestone-card.complete .milestone-status {
+  color: var(--success);
+}
+
+.hidden {
+  display: none;
+}
+
+@media (min-width: 540px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

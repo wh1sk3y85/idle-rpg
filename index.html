@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Emberwake Idle</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <section class="adventurer-shell">
+        <div class="scene-header">
+          <div>
+            <p class="eyebrow">Mobile Idle RPG</p>
+            <h1>Emberwake Idle</h1>
+          </div>
+          <div class="header-actions">
+            <span id="offline-pill" class="pill hidden">Offline gains loaded</span>
+            <button id="reset-button" class="secondary-button">Reset Save</button>
+            <button id="menu-button" class="secondary-button">Menu</button>
+          </div>
+        </div>
+
+        <article class="hero-summary">
+          <div class="hero-summary-row">
+            <div>
+              <p class="summary-label">Adventurer</p>
+              <p id="hero-summary-line" class="summary-value"></p>
+            </div>
+            <div class="hero-summary-actions">
+              <span id="combat-status" class="pill">Resting</span>
+              <button id="gear-button" class="icon-button" aria-label="Open gear panel">&#9881;</button>
+            </div>
+          </div>
+          <div class="hero-vitals">
+            <div class="vital-block">
+              <span class="stat-label">HP</span>
+              <strong id="hero-hp-label" class="stat-value"></strong>
+            </div>
+            <div class="vital-block">
+              <span class="stat-label">Level</span>
+              <strong id="hero-level-label" class="stat-value"></strong>
+            </div>
+          </div>
+          <div class="xp-bar">
+            <div id="combat-xp-fill" class="xp-fill"></div>
+          </div>
+          <p id="combat-level-label" class="muted"></p>
+        </article>
+
+        <article class="battle-stage">
+          <div class="battle-backdrop">
+            <div class="backdrop-glow"></div>
+            <div id="battle-art" class="battle-art"></div>
+            <button id="auto-combat-button" class="stage-toggle-button" aria-pressed="false">Auto Off</button>
+            <button id="log-toggle-button" class="corner-button" aria-expanded="false">Log</button>
+            <button id="combat-button" class="stage-action-button">Enemies</button>
+            <div id="battle-log-overlay" class="battle-log-overlay hidden">
+              <div class="log-overlay-card">
+                <div class="panel-title-row">
+                  <h2>Combat Log</h2>
+                  <button id="close-log-button" class="secondary-button">Close</button>
+                </div>
+                <div class="battle-log" id="battle-log"></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <section class="work-grid">
+          <article class="gather-summary">
+            <div class="panel-title-row">
+              <div>
+                <p class="summary-label">Gathering</p>
+                <p id="gather-summary-line" class="summary-value"></p>
+              </div>
+              <button id="gather-button" class="secondary-button">Gather</button>
+            </div>
+            <p id="gather-cycle-label" class="muted"></p>
+            <div class="xp-bar compact-bar">
+              <div id="gather-progress-fill" class="xp-fill"></div>
+            </div>
+          </article>
+
+          <article class="gather-summary">
+            <div class="panel-title-row">
+              <div>
+                <p class="summary-label">Crafting</p>
+                <p id="craft-summary-line" class="summary-value"></p>
+              </div>
+              <button id="craft-button" class="secondary-button">Craft</button>
+            </div>
+            <p id="craft-cycle-label" class="muted"></p>
+            <div class="xp-bar compact-bar">
+              <div id="craft-progress-fill" class="xp-fill"></div>
+            </div>
+          </article>
+        </section>
+
+        <div id="overlay-shell" class="menu-overlay hidden">
+          <div class="menu-sheet">
+            <div class="menu-header">
+              <div>
+                <p class="summary-label" id="overlay-label">Field Menu</p>
+                <p class="menu-title" id="overlay-title">Manage your run</p>
+              </div>
+              <button id="close-menu-button" class="secondary-button">Close</button>
+            </div>
+
+            <div id="menu-tabs" class="menu-tabs" aria-label="Information panels">
+              <button class="menu-tab-button active" data-tab="crafting">Crafting</button>
+              <button class="menu-tab-button" data-tab="inventory">Inventory</button>
+              <button class="menu-tab-button" data-tab="journal">Journal</button>
+            </div>
+
+            <div class="menu-panel-wrap">
+              <section id="equipment" class="menu-panel">
+                <article class="panel">
+                  <h2>Equipment & Stats</h2>
+                  <div id="equipment-slots" class="equipment-slots"></div>
+                  <div id="hero-stats" class="stats-grid"></div>
+                </article>
+              </section>
+
+              <section id="combat" class="menu-panel">
+                <article class="panel">
+                  <h2>Enemy Routes</h2>
+                  <div id="zone-list" class="zone-list"></div>
+                  <div class="action-row" id="encounter-buttons"></div>
+                </article>
+              </section>
+
+              <section id="gathering" class="menu-panel">
+                <article class="panel">
+                  <h2>Gathering Focus</h2>
+                  <div id="skill-cards" class="skill-cards"></div>
+                </article>
+              </section>
+
+              <section id="crafting" class="menu-panel active">
+                <article class="panel">
+                  <h2>Crafting</h2>
+                  <div id="recipe-list" class="recipe-list"></div>
+                </article>
+              </section>
+
+              <section id="inventory" class="menu-panel">
+                <article class="panel">
+                  <h2>Inventory</h2>
+                  <div id="resource-list" class="resource-list"></div>
+                </article>
+              </section>
+
+              <section id="journal" class="menu-panel">
+                <article class="panel">
+                  <h2>Journal</h2>
+                  <div id="milestone-list" class="milestone-list"></div>
+                </article>
+              </section>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
