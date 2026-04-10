@@ -1,20 +1,21 @@
 :root {
   color-scheme: dark;
-  --bg-top: #060816;
-  --bg-bottom: #0d1323;
-  --shell: rgba(9, 14, 28, 0.92);
-  --panel: rgba(16, 22, 39, 0.88);
-  --panel-strong: rgba(22, 29, 48, 0.92);
-  --panel-border: rgba(120, 140, 194, 0.16);
-  --text: #edf2ff;
-  --muted: #96a3c8;
-  --accent: #7c5cff;
-  --accent-strong: #b299ff;
-  --accent-soft: rgba(124, 92, 255, 0.16);
-  --success: #43c59e;
-  --warning: #f1b95a;
-  --danger: #ff7f7f;
-  --shadow: 0 24px 60px rgba(0, 0, 0, 0.36);
+  --bg-top: #030405;
+  --bg-bottom: #0a0b0f;
+  --shell: rgba(10, 11, 14, 0.95);
+  --panel: rgba(18, 19, 24, 0.92);
+  --panel-strong: rgba(22, 23, 29, 0.95);
+  --panel-border: rgba(82, 235, 255, 0.16);
+  --text: #eef7ff;
+  --muted: #90a3c9;
+  --accent: #2de2e6;
+  --accent-strong: #7af7ff;
+  --accent-soft: rgba(45, 226, 230, 0.16);
+  --violet: #a970ff;
+  --success: #5affb3;
+  --warning: #ffd166;
+  --danger: #ff6b9f;
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.46);
   --radius-lg: 28px;
   --radius-md: 18px;
   --radius-sm: 999px;
@@ -29,8 +30,9 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(circle at top, rgba(124, 92, 255, 0.18), transparent 30%),
-    radial-gradient(circle at bottom, rgba(67, 197, 158, 0.1), transparent 35%),
+    radial-gradient(circle at top, rgba(169, 112, 255, 0.12), transparent 24%),
+    radial-gradient(circle at 85% 10%, rgba(45, 226, 230, 0.08), transparent 18%),
+    radial-gradient(circle at bottom, rgba(90, 255, 179, 0.05), transparent 32%),
     linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
   color: var(--text);
 }
@@ -63,7 +65,7 @@ p {
   padding: 10px;
   border-radius: 34px;
   background:
-    linear-gradient(180deg, rgba(25, 33, 56, 0.98), rgba(10, 14, 26, 0.98)),
+    linear-gradient(180deg, rgba(19, 20, 26, 0.98), rgba(8, 9, 13, 0.98)),
     var(--shell);
   border: 1px solid var(--panel-border);
   box-shadow: var(--shadow);
@@ -75,8 +77,8 @@ p {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 20% 10%, rgba(124, 92, 255, 0.14), transparent 24%),
-    radial-gradient(circle at 80% 20%, rgba(67, 197, 158, 0.1), transparent 18%);
+    radial-gradient(circle at 20% 10%, rgba(169, 112, 255, 0.1), transparent 20%),
+    radial-gradient(circle at 80% 20%, rgba(45, 226, 230, 0.08), transparent 16%);
   pointer-events: none;
 }
 
@@ -120,6 +122,7 @@ p {
   letter-spacing: 0.14em;
   font-size: 0.7rem;
   font-weight: 700;
+  text-shadow: 0 0 12px rgba(45, 226, 230, 0.28);
 }
 
 h1 {
@@ -200,8 +203,8 @@ h1 {
   min-width: 0;
   padding: 10px;
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(148, 165, 220, 0.1);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(45, 226, 230, 0.015));
+  border: 1px solid rgba(122, 247, 255, 0.08);
 }
 
 .stats-grid,
@@ -253,14 +256,15 @@ h1 {
   height: 12px;
   margin-top: 8px;
   border-radius: var(--radius-sm);
-  background: rgba(124, 92, 255, 0.1);
+  background: rgba(169, 112, 255, 0.1);
 }
 
 .xp-fill {
   height: 100%;
   width: 0%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--accent), #5ce1e6);
+  background: linear-gradient(90deg, var(--violet), var(--accent), #5ce1e6);
+  box-shadow: 0 0 16px rgba(45, 226, 230, 0.35);
   transition: width 220ms ease;
 }
 
@@ -280,10 +284,11 @@ h1 {
   min-height: 28px;
   padding: 0 10px;
   border-radius: var(--radius-sm);
-  background: rgba(124, 92, 255, 0.16);
+  background: linear-gradient(180deg, rgba(169, 112, 255, 0.2), rgba(45, 226, 230, 0.08));
   color: var(--accent-strong);
   font-size: 0.78rem;
   font-weight: 700;
+  box-shadow: inset 0 0 0 1px rgba(122, 247, 255, 0.06);
 }
 
 #combat-status {
@@ -306,7 +311,7 @@ h1 {
   padding: 8px;
   border-radius: var(--radius-lg);
   background:
-    linear-gradient(180deg, rgba(18, 26, 46, 0.8), rgba(8, 12, 22, 0.94)),
+    linear-gradient(180deg, rgba(18, 28, 52, 0.84), rgba(7, 11, 23, 0.96)),
     var(--panel);
   border: 1px solid var(--panel-border);
 }
@@ -317,17 +322,18 @@ h1 {
   border-radius: 24px;
   overflow: hidden;
   background:
-    radial-gradient(circle at center, rgba(124, 92, 255, 0.22), transparent 30%),
+    radial-gradient(circle at center, rgba(169, 112, 255, 0.22), transparent 30%),
+    radial-gradient(circle at 75% 35%, rgba(45, 226, 230, 0.14), transparent 24%),
     linear-gradient(180deg, rgba(15, 21, 39, 0.5), rgba(8, 12, 23, 0.88));
-  border: 1px solid rgba(146, 167, 222, 0.12);
+  border: 1px solid rgba(122, 247, 255, 0.12);
 }
 
 .backdrop-glow {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 50% 70%, rgba(67, 197, 158, 0.22), transparent 24%),
-    radial-gradient(circle at 50% 35%, rgba(124, 92, 255, 0.18), transparent 18%);
+    radial-gradient(circle at 50% 70%, rgba(90, 255, 179, 0.24), transparent 24%),
+    radial-gradient(circle at 50% 35%, rgba(169, 112, 255, 0.2), transparent 18%);
 }
 
 .battle-art {
@@ -371,7 +377,7 @@ h1 {
   border-radius: var(--radius-md);
   background: rgba(8, 12, 23, 0.72);
   color: var(--text);
-  border: 1px solid rgba(146, 167, 222, 0.16);
+  border: 1px solid rgba(122, 247, 255, 0.16);
 }
 
 .stage-action-button {
@@ -384,7 +390,7 @@ h1 {
   border-radius: var(--radius-md);
   background: rgba(8, 12, 23, 0.78);
   color: var(--text);
-  border: 1px solid rgba(146, 167, 222, 0.16);
+  border: 1px solid rgba(122, 247, 255, 0.16);
 }
 
 .stage-toggle-button {
@@ -396,13 +402,13 @@ h1 {
   border-radius: var(--radius-md);
   background: rgba(8, 12, 23, 0.78);
   color: var(--text);
-  border: 1px solid rgba(146, 167, 222, 0.16);
+  border: 1px solid rgba(122, 247, 255, 0.16);
 }
 
 .stage-toggle-button.active {
-  background: var(--accent-soft);
+  background: linear-gradient(180deg, rgba(169, 112, 255, 0.24), rgba(45, 226, 230, 0.16));
   color: var(--accent-strong);
-  border-color: rgba(176, 157, 255, 0.24);
+  border-color: rgba(122, 247, 255, 0.24);
 }
 
 .battle-log-overlay {
@@ -420,8 +426,8 @@ h1 {
   max-width: 100%;
   padding: 14px;
   border-radius: 22px;
-  background: rgba(15, 22, 39, 0.74);
-  border: 1px solid rgba(146, 167, 222, 0.14);
+  background: rgba(16, 17, 22, 0.84);
+  border: 1px solid rgba(122, 247, 255, 0.14);
   backdrop-filter: blur(18px);
 }
 
@@ -453,11 +459,12 @@ h1 {
   width: calc(100% - 40px);
   padding: 8px 10px;
   border-radius: 18px;
-  background: rgba(9, 14, 27, 0.62);
-  border: 1px solid rgba(146, 167, 222, 0.1);
+  background: linear-gradient(180deg, rgba(12, 13, 19, 0.8), rgba(20, 22, 30, 0.76));
+  border: 1px solid rgba(122, 247, 255, 0.12);
   min-height: 64px;
   display: grid;
   gap: 4px;
+  box-shadow: 0 0 24px rgba(45, 226, 230, 0.08);
 }
 
 .battle-caption-row {
@@ -540,9 +547,9 @@ h1 {
 .compact-button,
 .secondary-button,
 .icon-button {
-  background: rgba(255, 255, 255, 0.05);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(45, 226, 230, 0.04));
   color: var(--text);
-  border: 1px solid rgba(146, 167, 222, 0.12);
+  border: 1px solid rgba(122, 247, 255, 0.12);
 }
 
 .icon-button {
@@ -555,20 +562,23 @@ h1 {
 
 .menu-tab-button.active,
 .compact-button.active {
-  background: var(--accent-soft);
+  background: linear-gradient(180deg, rgba(169, 112, 255, 0.24), rgba(45, 226, 230, 0.16));
   color: var(--accent-strong);
-  border-color: rgba(176, 157, 255, 0.24);
+  border-color: rgba(122, 247, 255, 0.24);
 }
 
 .primary-button,
 .skill-button,
 .recipe-button {
-  background: linear-gradient(180deg, var(--accent), #5f8bff);
+  background: linear-gradient(180deg, rgba(169, 112, 255, 0.28), rgba(45, 226, 230, 0.22));
   color: #f6f7ff;
+  border: 1px solid rgba(122, 247, 255, 0.18);
+  box-shadow: 0 0 12px rgba(45, 226, 230, 0.12);
 }
 
 .skill-button.active {
-  background: linear-gradient(180deg, var(--success), #2e9d7d);
+  background: linear-gradient(180deg, rgba(90, 255, 179, 0.28), rgba(45, 226, 230, 0.18));
+  border-color: rgba(90, 255, 179, 0.2);
 }
 
 .menu-panel-wrap {
@@ -597,6 +607,7 @@ h1 {
 .zone-enemy-list {
   display: grid;
   gap: 10px;
+  margin-top: 10px;
 }
 
 .recipe-group-header {
@@ -604,7 +615,13 @@ h1 {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 12px;
+}
+
+.recipe-group-title {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: var(--accent-strong);
 }
 
 .enemy-card,
@@ -616,21 +633,77 @@ h1 {
 .enemy-choice,
 .healing-card {
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(146, 167, 222, 0.1);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(45, 226, 230, 0.015));
+  border: 1px solid rgba(122, 247, 255, 0.1);
 }
 
 .zone-card.active,
 .enemy-choice.active,
 .healing-card.active {
-  border-color: rgba(176, 157, 255, 0.24);
-  background: rgba(124, 92, 255, 0.09);
+  border-color: rgba(122, 247, 255, 0.24);
+  background: linear-gradient(180deg, rgba(169, 112, 255, 0.08), rgba(45, 226, 230, 0.04));
 }
 
 .zone-card.locked,
 .enemy-choice.locked,
 .healing-card.locked {
   opacity: 0.6;
+}
+
+.collapsible-group {
+  overflow: hidden;
+}
+
+.collapsible-header {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-right: 40px;
+}
+
+.collapsible-header::-webkit-details-marker {
+  display: none;
+}
+
+.collapsible-header::marker {
+  content: "";
+}
+
+.collapsible-header > * {
+  pointer-events: none;
+}
+
+.collapsible-header::after {
+  content: "+";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(169, 112, 255, 0.18), rgba(45, 226, 230, 0.08));
+  border: 1px solid rgba(122, 247, 255, 0.12);
+  color: var(--accent-strong);
+  font-weight: 700;
+}
+
+.collapsible-group[open] > .collapsible-header::after {
+  content: "-";
+}
+
+.collapsible-group[open] > .collapsible-header {
+  margin-bottom: 10px;
+}
+
+.skill-card,
+.recipe-group,
+.zone-card {
+  gap: 0;
 }
 
 .choice-title,
@@ -648,6 +721,14 @@ h1 {
   color: var(--muted);
   font-size: 0.9rem;
   line-height: 1.4;
+}
+
+.skill-script,
+.recipe-description {
+  font-size: 0.8rem;
+  font-style: italic;
+  letter-spacing: 0.01em;
+  color: #aebbe0;
 }
 
 .enemy-subtitle {
@@ -677,7 +758,8 @@ h1 {
 
 .enemy-health-fill {
   height: 100%;
-  background: linear-gradient(90deg, #ff7f7f, #f1b95a);
+  background: linear-gradient(90deg, #ff6b9f, #ffd166, #7af7ff);
+  box-shadow: 0 0 14px rgba(255, 107, 159, 0.25);
 }
 
 .action-row {
@@ -685,6 +767,56 @@ h1 {
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 14px;
+}
+
+.recipe-line {
+  display: grid;
+  gap: 6px;
+}
+
+.recipe-line-label {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--accent-strong);
+}
+
+.recipe-cost-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cost-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(122, 247, 255, 0.1);
+  color: var(--text);
+}
+
+.cost-chip strong {
+  color: var(--accent-strong);
+}
+
+.cost-chip.affordable {
+  background: linear-gradient(180deg, rgba(90, 255, 179, 0.16), rgba(45, 226, 230, 0.08));
+  border-color: rgba(90, 255, 179, 0.18);
+}
+
+.cost-chip.missing {
+  background: linear-gradient(180deg, rgba(255, 107, 159, 0.14), rgba(169, 112, 255, 0.08));
+  border-color: rgba(255, 107, 159, 0.16);
+}
+
+.recipe-result {
+  color: var(--text);
+  font-size: 0.9rem;
+  line-height: 1.35;
 }
 
 .resource-item {
